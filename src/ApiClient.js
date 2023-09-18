@@ -193,6 +193,15 @@
     return this.basePath;
   };
 
+
+  /**
+   * Sets the API timeout.
+   */
+  exports.prototype.setApiTimeout = function setApiTimeout(timeout) {
+    this.timeout = timeout;
+  };
+  
+
   /**
    * Sets the API endpoint base URL.
    */
