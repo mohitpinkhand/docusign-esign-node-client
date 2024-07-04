@@ -2,6 +2,142 @@
 See [DocuSign Support Center](https://support.docusign.com/en/releasenotes/) for Product Release Notes.
 
 
+## [v7.0.2] - eSignature API v2.1-24.1.01.00 - 2024-06-06
+### Changed
+- Resolved an issue with the PDF download logic that caused corrupted data.
+## [v7.0.1] - eSignature API v2.1-24.1.01.00 - 2024-05-24
+## Resolved "Generate Access Token SDK Method is broken since most recent RC Version"
+## [v7.0.0] - eSignature API v2.1-24.1.01.00 - 2024-05-22
+## Endpoint-Specific Changes
+
+### Updated [EnvelopeRecipients: createRecipientProofFileResourceToken](https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/enveloperecipients/createrecipientprooffileresourcetoken/)
+The `"token_scopes"` parameter has been moved from path parameters to query parameters for the above mentioned endpoint.
+
+### Updated [EnvelopeView:CreateSender](https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopeviews/createsender/) and [EnvelopeView:CreateEdit](https://developers.docusign.com/docs/esign-rest-api/reference/envelopes/envelopeviews/createedit/)
+The body parameter `returnUrlRequest` has been changed to `envelopeViewRequest`.
+`envelopeViewRequest` has the same properties as the previous `returnUrlRequest` but now includes additional `viewAccess` and `settings` properties, where settings is a complex object with several UI controls for the view experience.
+
+### Updated [TemplateViews: createEdit](https://developers.docusign.com/docs/esign-rest-api/reference/templates/templateviews/createedit/)
+The body parameter `returnUrlRequest` has been changed to `templateViewRequest`.
+`templateViewRequest` has the same properties as the previous `returnUrlRequest` but now includes an additional `viewAccess` string.
+
+## Model Changes
+
+- Updated existing models
+
+### `accountSettingsInformation`
+
+- **Added fields:**
+  - `allowConnectEnvelopeRemovedEvent`
+  - `allowOrganizationBranding`
+  - `allowOrganizationBrandingMetadata`
+  - `allowPendingDestinationUrlEdition`
+  - `allowPendingDestinationUrlEditionMetadata`
+  - `disableBulkSendRecipientLimit`
+  - `disableBulkSendRecipientLimitMetaData`
+  - `enableAdvancedSearch`
+  - `enableAdvancedSearchMetadata`
+  - `enableContentSearch`
+  - `enableContentSearchMetadata`
+  - `enableMultiUserRepositoryFeatures`
+  - `enableMultiUserRepositoryFeaturesMetadata`
+  - `enablePremiumDataVerificationExtensions`
+  - `enablePremiumDataVerificationExtensionsMetadata`
+  - `enableSaveAsEnvelopeCustomFieldInWebForms`
+  - `enableSaveAsEnvelopeCustomFieldInWebFormsMetadata`
+  - `enableScheduledRelease`
+  - `enableScheduledReleaseMetadata`
+  - `isvOemEmbed`
+  - `isvOemEmbedMetaData`
+
+- **Removed fields:**
+  - `enableInboxRelevanceSortForRecentAccounts`
+  - `enableInboxRelevanceSortForRecentAccountsMetadata`
+  - `enableScheduledRelease`
+  - `enableScheduledReleaseMetadata`
+  - `enableSearch`
+  - `enableSearchMetadata`
+  - `enableSearchUI`
+  - `enableSearchUIMetadata`
+
+### `accountUISettings`
+
+- **Added fields:**
+  - `enableEnvelopeTypes`
+  - `enableEnvelopeTypesMetadata`
+
+### `envelopDefinitions`
+
+- **Added field:**
+  - `uSigState`
+
+### `envelopTemplate`
+
+- **Added field:**
+  - `uSigState`
+
+### `group`
+
+- **Added property:**
+  - `lastModifiedOn`
+
+### `receipientViewRequest`
+
+- **Added property:**
+  - `displayFormat`
+
+### `userSettingsInformation`
+
+- **Added properties:**
+  - `accountAgreementsAccessType`
+  - `accountAgreementsAccessTypeMetadata`
+  - `canBulkUploadAgreements`
+  - `canBulkUploadAgreementsMetadata`
+  - `canManageAgreementParties`
+  - `canManageAgreementPartiesMetadata`
+
+### Newly added Models
+
+- `envelopeViewDocumentSettings`
+- `envelopeViewEnvelopeCustomFieldSettings`
+- `envelopeViewRecipientSettings`
+- `envelopeViewRequest`
+- `envelopeViewSettings`
+- `envelopeViewTaggerSettings`
+- `envelopeViewTemplateSettings`
+- `paletteItemSettings`
+- `paletteSettings`
+- `templateViewRequest`
+
+### Removed Models
+- `returnUrlRequest`
+
+## [v7.0.0-rc1] - eSignature API v2.1-24.1.01.00 - 2024-05-03
+### Changed
+- Added support for version v2.1-24.1.01.00 of the DocuSign ESignature API.
+- Updated the SDK release version.
+
+## [v6.6.0-rc2] - eSignature API v2.1-23.4.02.00 - 2024-03-19
+### Changed
+- Substituted the superagent proxy with Axios 1.6.8, addressing security vulnerabilities.
+- Updated the SDK release version.
+
+## [v6.6.0-rc1] - eSignature API v2.1-23.4.02.00 - 2024-03-12
+### Changed
+- Added user-generated JWT assertion support via sendJWTTokenRequest.
+- Added support for version v2.1-23.4.02.00 of the DocuSign ESignature API.
+- Updated the SDK release version.
+
+## [v6.5.1] - eSignature API v2.1-23.3.01.02 - 2023-11-15
+### Changed
+- Rolled back the superagent-proxy package version from 3.0.0 to 2.0.0
+- Updated the SDK release version.
+
+## [v6.5.0] - eSignature API v2.1-23.3.01.02 - 2023-10-25
+### Changed
+- Added support for version v2.1-23.3.01.02 of the DocuSign ESignature API.
+- Updated the SDK release version.
+
 ## [v6.4.0] - eSignature API v2.1-23.3.00.01 - 2023-08-30
 ### Changed
 - Added support for version v2.1-23.3.00.01 of the DocuSign ESignature API.

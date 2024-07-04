@@ -55,6 +55,9 @@
     if (data) {
       obj = obj || new exports();
 
+      if (data.hasOwnProperty('accessType')) {
+        obj['accessType'] = ApiClient.convertToType(data['accessType'], 'String');
+      }
       if (data.hasOwnProperty('dsGroupId')) {
         obj['dsGroupId'] = ApiClient.convertToType(data['dsGroupId'], 'String');
       }
@@ -70,6 +73,9 @@
       if (data.hasOwnProperty('groupType')) {
         obj['groupType'] = ApiClient.convertToType(data['groupType'], 'String');
       }
+      if (data.hasOwnProperty('lastModifiedOn')) {
+        obj['lastModifiedOn'] = ApiClient.convertToType(data['lastModifiedOn'], 'String');
+      }
       if (data.hasOwnProperty('permissionProfileId')) {
         obj['permissionProfileId'] = ApiClient.convertToType(data['permissionProfileId'], 'String');
       }
@@ -83,6 +89,11 @@
     return obj;
   }
 
+  /**
+   * 
+   * @member {String} accessType
+   */
+  exports.prototype['accessType'] = undefined;
   /**
    * 
    * @member {String} dsGroupId
@@ -108,6 +119,11 @@
    * @member {String} groupType
    */
   exports.prototype['groupType'] = undefined;
+  /**
+   * 
+   * @member {String} lastModifiedOn
+   */
+  exports.prototype['lastModifiedOn'] = undefined;
   /**
    * The ID of the permission profile associated with the group.
    * @member {String} permissionProfileId

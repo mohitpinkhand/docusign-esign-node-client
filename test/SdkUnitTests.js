@@ -9,10 +9,11 @@ try {
 }
 var assert = require('assert');
 var path = require('path');
-var superagent = require('superagent');
+var axios = require('axios');
 
 var Buffer = global.Buffer.from ? global.Buffer : require('safe-buffer').Buffer;
 var fs = require('fs');
+const { ValidatePdf } = require('./helpers');
 
 var userName = config.email;
 var privateKey = config.privateKey;
@@ -25,7 +26,6 @@ var basePath = restApi.BasePath.DEMO;
 var oAuthBasePath = oAuth.BasePath.DEMO;
 
 var SignTest1File = 'docs/SignTest1.pdf';
-var LargeTestDocument1 = 'docs/LargeTestDocument1.pdf';
 var brandLogoPath = 'img/docusign-lgo.png';
 var brandXmlPath = 'docs/brand.xml';
 var accountId = '';
@@ -73,7 +73,7 @@ describe('SDK Unit Tests:', function (done) {
       .then(function (res) {
         var baseUri,
           accountDomain;
-        apiClient.addDefaultHeader('Authorization', 'Bearer ' + res.body.access_token);
+        apiClient.setJWTToken(res.body.access_token);
 
         // console.log(apiClient.getUserInfo(res.body.access_token));
         apiClient.getUserInfo(res.body.access_token)
@@ -266,11 +266,13 @@ describe('SDK Unit Tests:', function (done) {
     var randomState = '*^.$DGj*)+}Jk';
     var authUri = apiClient.getAuthorizationUri(integratorKeyAuthCode, scopes, RedirectURI, responseType, randomState);
 
-    superagent.get(authUri)
-      .end(function (err, res) {
-        assert.equal(err, undefined);
-        assert.equal(res.statusCode, 200);
+    axios.get(authUri)
+      .then(function (res) {
+        assert.equal(res.status, 200);
         done();
+      })
+      .catch((err) => {
+        assert.notEqual(err, undefined);
       });
   });
 
@@ -668,7 +670,7 @@ describe('SDK Unit Tests:', function (done) {
     try {
       var fs = require('fs');
       // read file from a local directory
-      fileBytes = fs.readFileSync(path.resolve(__dirname, LargeTestDocument1));
+      fileBytes = fs.readFileSync(path.resolve(__dirname, SignTest1File));
     } catch (ex) {
       // handle error
       console.log('Exception: ' + ex);
@@ -741,6 +743,13 @@ describe('SDK Unit Tests:', function (done) {
                   var tempFile = path.resolve(__dirname, filename);
                   fs.writeFile(tempFile, Buffer.from(pdfBytes, 'binary'), function (err) {
                     if (err) console.log('Error: ' + err);
+                    ValidatePdf(tempFile).then(() => {
+                      done();
+                    }).catch((error) => {
+                      if (error) {
+                        return done(error);
+                      }
+                    });
                   });
                   console.log('Document from envelope ' + envelopeSummary.envelopeId + ' has been downloaded to ' + tempFile);
                 } catch (ex) {
@@ -753,7 +762,6 @@ describe('SDK Unit Tests:', function (done) {
                 return done(error);
               }
             });
-          done();
         }
       })
       .catch(function (error) {
@@ -939,33 +947,36 @@ describe('SDK Unit Tests:', function (done) {
                         var tempFile = path.resolve(__dirname, filename);
                         fs.writeFile(tempFile, Buffer.from(pdfBytes, 'binary'), function (err) {
                           if (err) console.log('Error: ' + err);
-                        });
-                        console.log('Document from envelope ' + envelopeSummary.envelopeId + ' has been downloaded to ' + tempFile);
-                      } catch (ex) {
-                        console.log('Exception: ' + ex);
-                      }
-                      diagApi.listRequestLogs()
-                        .then(function (logsList) {
-                          if (logsList) {
-                            var requestLogId = logsList.apiRequestLogs[0].requestLogId;
-                            console.log(requestLogId);
-                            diagApi.getRequestLog(requestLogId)
-                              .then(function (diagBytes) {
-                                if (diagBytes) {
-                                  try {
-                                    var fs = require('fs');
-                                    // download the document pdf
-                                    var filename = requestLogId + '.txt';
-                                    var tempFile = path.resolve(__dirname, filename);
-                                    fs.writeFile(tempFile, diagBytes, function (err) {
-                                      if (err) console.log('Error: ' + err);
+                          ValidatePdf(tempFile).then(() => {
+                            diagApi.listRequestLogs()
+                              .then(function (logsList) {
+                                if (logsList) {
+                                  var requestLogId = logsList.apiRequestLogs[0].requestLogId;
+                                  console.log(requestLogId);
+                                  diagApi.getRequestLog(requestLogId)
+                                    .then(function (diagBytes) {
+                                      if (diagBytes) {
+                                        try {
+                                          var fs = require('fs');
+                                          // download the document pdf
+                                          var filename = requestLogId + '.txt';
+                                          var tempFile = path.resolve(__dirname, filename);
+                                          fs.writeFile(tempFile, diagBytes, function (err) {
+                                            if (err) console.log('Error: ' + err);
+                                          });
+                                          console.log('Diagnostics ID ' + requestLogId + ' data has been downloaded to ' + tempFile);
+                                          done();
+                                        } catch (ex) {
+                                          console.log('Exception: ' + ex);
+                                          done(ex);
+                                        }
+                                      }
+                                    })
+                                    .catch(function (error) {
+                                      if (error) {
+                                        return done(error);
+                                      }
                                     });
-                                    console.log('Diagnostics ID ' + requestLogId + ' data has been downloaded to ' + tempFile);
-                                    done();
-                                  } catch (ex) {
-                                    console.log('Exception: ' + ex);
-                                    done(ex);
-                                  }
                                 }
                               })
                               .catch(function (error) {
@@ -973,13 +984,16 @@ describe('SDK Unit Tests:', function (done) {
                                   return done(error);
                                 }
                               });
-                          }
-                        })
-                        .catch(function (error) {
-                          if (error) {
-                            return done(error);
-                          }
+                          }).catch(function (error) {
+                            if (error) {
+                              return done(error);
+                            }
+                          });
                         });
+                        console.log('Document from envelope ' + envelopeSummary.envelopeId + ' has been downloaded to ' + tempFile);
+                      } catch (ex) {
+                        console.log('Exception: ' + ex);
+                      }
                     }
                   })
                   .catch(function (error) {

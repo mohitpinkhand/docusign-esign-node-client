@@ -2,6 +2,7 @@ var path = require('path');
 var fs = require('fs');
 
 var constants = require('./constants');
+const PdfParser = require('pdf2json');
 
 var INTEGRATOR_KEY = constants.INTEGRATOR_KEY;
 var OAUTH_BASE_PATH = constants.OAUTH_BASE_PATH;
@@ -26,7 +27,7 @@ var JWTAuth = () => {
       apiClient.requestJWTUserToken(INTEGRATOR_KEY, USER_ID, scopes, privateKeyFile, EXPIRES_IN).then(function (res) {
         var baseUri;
         var accountDomain;
-        apiClient.addDefaultHeader('Authorization', `Bearer ${res.body.access_token}`);
+        apiClient.setJWTToken(res.body.access_token);
         apiClient.getUserInfo(res.body.access_token).then(function (userInfo) {
           var ACCOUNT_ID = userInfo.accounts[0].accountId;
           baseUri = userInfo.accounts[0].baseUri;
@@ -45,4 +46,21 @@ var JWTAuth = () => {
   });
 };
 
-module.exports = { JWTAuth };
+const ValidatePdf = (tempFile) => {
+  const parser = new PdfParser();
+  return new Promise(function (resolve, reject) {
+    parser.on('pdfParser_dataError', (errData) => {
+      console.error(errData.parserError);
+      reject(new Error([
+        'Unable to parse downloaded PDF\n',
+        JSON.stringify(errData)
+      ]));
+    });
+    parser.on('pdfParser_dataReady', (data) => {
+      resolve(true);
+    });
+    parser.loadPDF(tempFile);
+  });
+};
+
+module.exports = { JWTAuth, ValidatePdf };
